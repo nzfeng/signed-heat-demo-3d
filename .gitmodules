@@ -1,0 +1,6 @@
+[submodule "deps/polyscope"]
+	path = deps/polyscope
+	url = https://github.com/nmwsharp/polyscope.git
+[submodule "deps/signed-heat-3d"]
+	path = deps/signed-heat-3d
+	url = https://github.com/nzfeng/signed-heat-3d.git

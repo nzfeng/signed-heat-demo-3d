@@ -70,8 +70,7 @@ endif()
 
 # == Deps
 add_subdirectory(deps/polyscope)
-#add_subdirectory(deps/signed-heat-3d)
-add_subdirectory(../signed-heat-3d deps/signed-heat-3d)
+add_subdirectory(deps/signed-heat-3d)
 
 # == Build our project stuff
 

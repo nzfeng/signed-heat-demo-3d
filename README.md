@@ -1,10 +1,12 @@
-# signed-heat-demo-3d (3D volumetric domains)
+# signed-heat-demo-3d
 
 C++ demo for [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d).
 
 For visualization, the solution is solved on a background tet mesh or grid, which you do _not_ need to supply yourself -- the program discretizes the domain for you, and you just need to supply the geometry to which you'd like the signed distance. 
 
-Documentation is at [nzfeng.github.io/signed-heat-3d](nzfeng.github.io/signed-heat-3d), which also includes install instructions for the corresponding Python library.
+Documentation is at [nzfeng.github.io/signed-heat-3d](nzfeng.github.io/signed-heat-3d)
+
+If you're interested in a Python version, [the documentation](nzfeng.github.io/signed-heat-3d) also includes install instructions for the corresponding Python library & demo.
 
 ![teaser image](media/teaser.png)
 
@@ -31,7 +33,7 @@ If this code contributes to academic work, please cite as:
 
 ## Getting started
 
-This project depends on [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d), and uses [Polyscope](http://polyscope.run/) for visualization. These dependencies are added as git submodules, so copies will be downloaded locally when you clone this project as below.
+This project depends on [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d) and [geometry-central](https://geometry-central.net/), and uses [Polyscope](http://polyscope.run/) for visualization. These dependencies are added as git submodules, so copies will be downloaded locally when you clone this project as below.
 
 ```
 git clone --recursive https://github.com/nzfeng/signed-heat-demo-3d.git
@@ -43,9 +45,11 @@ bin/main /path/to/mesh
 ```
 A Polyscope GUI will open.
 
-If you do not clone recursively, some submodules or sub-submodules will not clone. Initialize/update these submodules by running `git submodule update --init --recursive` or `git submodule update --recursive`.
+If you do not clone recursively, some submodules or sub-submodules will not clone. (In particular, you may get errors about missing `CMakeLists.txt` files.) Initialize/update these submodules by running `git submodule update --init --recursive` or `git submodule update --recursive`.
 
-Linear solves are accelerated using the algebraic multigrid library [AMGCL](https://amgcl.readthedocs.io/en/latest/), which (unfortunately) requires Boost. Boost can be installed on macOS using `brew install boost`, and the necessary modules on Ubuntu using
+Linear solves are accelerated using the algebraic multigrid library [AMGCL](https://amgcl.readthedocs.io/en/latest/), which (unfortunately) requires Boost. If you do not want to use Boost, use `cmake -DSHM_NO_AMGCL=On` to compile to a program without AMGCL but with solve times \~5x slower (more or less for larger/smaller problems). Force use of AMGCL via `cmake -DSHM_NO_AMGCL=Off`.
+
+Boost can be installed on macOS using `brew install boost`, and the necessary modules on Ubuntu using
 ```
 sudo apt-get -y update
 sudo apt-get -y install libboost-dev libboost-test-dev libboost-program-options-dev libboost-serialization-dev

@@ -77,7 +77,6 @@ void solve() {
     SHM_OPTIONS.levelSetConstraint = static_cast<LevelSetConstraint>(CONSTRAINT_MODE);
     SHM_OPTIONS.tCoef = TCOEF;
     for (int i = 0; i < 3; i++) SHM_OPTIONS.resolution[i] = RESOLUTION[i]; // implicit cast
-    if (MESH_MODE != LAST_SOLVER_MODE) SHM_OPTIONS.rebuild = true;
     std::string cmapName = "viridis";
     if (MESH_MODE == MeshMode::Tet) {
         if (VERBOSE) std::cerr << "\nSolving on tet mesh..." << std::endl;
@@ -88,10 +87,9 @@ void solve() {
         ms_fp = t2 - t1;
         if (VERBOSE) std::cerr << "Solve time (s): " << ms_fp.count() / 1000. << std::endl;
         if (!HEADLESS) {
-            if (SHM_OPTIONS.rebuild) {
-                polyscope::VolumeMesh* psVolumeMesh =
-                    polyscope::registerTetMesh("tet domain", tetSolver->getVertices(), tetSolver->getTets());
-            }
+            polyscope::VolumeMesh* psVolumeMesh =
+                polyscope::registerTetMesh("tet domain", tetSolver->getVertices(), tetSolver->getTets());
+
             polyscope::getVolumeMesh("tet domain")
                 ->addVertexScalarQuantity("GSD", PHI)
                 ->setColorMap(cmapName)
@@ -107,19 +105,17 @@ void solve() {
         ms_fp = t2 - t1;
         if (VERBOSE) std::cerr << "Solve time (s): " << ms_fp.count() / 1000. << std::endl;
         if (!HEADLESS) {
-            if (SHM_OPTIONS.rebuild) {
-                glm::vec3 boundMin, boundMax, gridSizes;
-                Eigen::Vector3d bboxMin, bboxMax;
-                std::tie(bboxMin, bboxMax) = gridSolver->getBBox();
-                std::array<size_t, 3> sizes = gridSolver->getGridResolution();
-                for (int i = 0; i < 3; i++) {
-                    boundMin[i] = bboxMin(i);
-                    boundMax[i] = bboxMax(i);
-                    gridSizes[i] = sizes[i];
-                }
-                polyscope::VolumeGrid* psGrid =
-                    polyscope::registerVolumeGrid("grid domain", gridSizes, boundMin, boundMax);
+            glm::vec3 boundMin, boundMax, gridSizes;
+            Eigen::Vector3d bboxMin, bboxMax;
+            std::tie(bboxMin, bboxMax) = gridSolver->getBBox();
+            std::array<size_t, 3> sizes = gridSolver->getGridResolution();
+            for (int i = 0; i < 3; i++) {
+                boundMin[i] = bboxMin(i);
+                boundMax[i] = bboxMax(i);
+                gridSizes[i] = sizes[i];
             }
+            polyscope::VolumeGrid* psGrid = polyscope::registerVolumeGrid("grid domain", gridSizes, boundMin, boundMax);
+
             gridScalarQ = polyscope::getVolumeGrid("grid domain")
                               ->addNodeScalarQuantity("GSD", PHI)
                               ->setColorMap(cmapName)
@@ -141,7 +137,6 @@ void solve() {
         }
     }
     LAST_SOLVER_MODE = MESH_MODE;
-    SHM_OPTIONS.rebuild = false;
 }
 
 void contour() {
@@ -169,20 +164,18 @@ void callback() {
     ImGui::Separator();
     ImGui::Text("Solve options");
     ImGui::Separator();
-    if (MESH_MODE == MeshMode::Tet && mesh != nullptr && mesh->isTriangular()) {
-        ImGui::Checkbox("Use Crouzeix-Raviart", &SHM_OPTIONS.useCrouzeixRaviart);
-    }
+    // if (MESH_MODE == MeshMode::Tet && mesh != nullptr && mesh->isTriangular()) {
+    //     ImGui::Checkbox("Use Crouzeix-Raviart", &SHM_OPTIONS.useCrouzeixRaviart);
+    // }
     ImGui::InputFloat("tCoef (diffusion time)", &TCOEF);
 
     // Resolution
-    if (ImGui::InputInt("Resolution (x-axis)", &RESOLUTION[0])) {
-        SHM_OPTIONS.rebuild = true;
-    }
-    if (ImGui::InputInt("Resolution (y-axis)", &RESOLUTION[1])) {
-        SHM_OPTIONS.rebuild = true;
-    }
-    if (ImGui::InputInt("Resolution (z-axis)", &RESOLUTION[2])) {
-        SHM_OPTIONS.rebuild = true;
+    if (MESH_MODE == MeshMode::Tet) {
+        ImGui::InputInt("Resolution", &RESOLUTION[0]);
+    } else if (MESH_MODE == MeshMode::Grid) {
+        ImGui::InputInt("Resolution (x-axis)", &RESOLUTION[0]);
+        ImGui::InputInt("Resolution (y-axis)", &RESOLUTION[1]);
+        ImGui::InputInt("Resolution (z-axis)", &RESOLUTION[2]);
     }
 
     if (MESH_MODE != MeshMode::Grid) {
