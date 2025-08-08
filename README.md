@@ -36,7 +36,7 @@ If this code contributes to academic work, please cite as:
 This project depends on [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d) and [geometry-central](https://geometry-central.net/), and uses [Polyscope](http://polyscope.run/) for visualization. These dependencies are added as git submodules, so copies will be downloaded locally when you clone this project as below.
 
 ```
-git clone --recursive https://github.com/nzfeng/signed-heat-demo-3d.git
+git clone --recurse-submodules https://github.com/nzfeng/signed-heat-demo-3d.git
 cd signed-heat-demo-3d
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. # use `Debug` mode to enable checks
